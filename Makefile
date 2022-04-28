@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-all: download .venv
+all: download toolbox .venv
 .PHONY: all
 
 download: downloads/nyu_depth_v2_labeled.mat downloads/toolbox_nyu_depth_v2.zip
