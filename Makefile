@@ -7,6 +7,7 @@ download: downloads/nyu_depth_v2_labeled.mat downloads/toolbox_nyu_depth_v2.zip
 .PHONY: download
 
 clean:
+	rm -r toolbox || true
 .PHONY: clean
 
 purge: clean
@@ -23,11 +24,15 @@ freeze:
 downloads:
 	mkdir downloads
 
-downloads/nyu_depth_v2_labeled.mat: downloads
-	curl http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
+downloads/nyu_depth_v2_labeled.mat: | downloads
+	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
 
-downloads/toolbox_nyu_depth_v2.zip: downloads
-	curl http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o $@
+downloads/toolbox_nyu_depth_v2.zip: | downloads
+	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o $@
+
+toolbox: downloads/toolbox_nyu_depth_v2.zip
+	unzip downloads/toolbox_nyu_depth_v2.zip -d $@
+	touch $@
 
 ###########################################################
 
