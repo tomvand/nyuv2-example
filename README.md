@@ -1,1 +1,1 @@
-See [notes.ipynb].
+See [notes.ipynb](notes.ipynb).
