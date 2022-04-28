@@ -1,10 +1,13 @@
 SHELL := /bin/bash
 
-all: download toolbox .venv
+all: download unpack .venv
 .PHONY: all
 
 download: downloads/nyu_depth_v2_labeled.mat downloads/toolbox_nyu_depth_v2.zip
 .PHONY: download
+
+unpack: toolbox
+.PHONY: unpack
 
 clean:
 	rm -r toolbox || true
