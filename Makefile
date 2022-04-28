@@ -6,11 +6,12 @@ all: download unpack .venv
 download: downloads/nyu_depth_v2_labeled.mat downloads/toolbox_nyu_depth_v2.zip
 .PHONY: download
 
-unpack: toolbox
+unpack: toolbox data/nyu_depth_v2_labeled.mat
 .PHONY: unpack
 
 clean:
 	rm -r toolbox || true
+	rm -r data || true
 .PHONY: clean
 
 purge: clean
@@ -30,11 +31,17 @@ downloads:
 downloads/nyu_depth_v2_labeled.mat: | downloads
 	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
 
+data:
+	mkdir data
+
+data/nyu_depth_v2_labeled.mat: downloads/nyu_depth_v2_labeled.mat | data
+	ln -s ../$< $@
+
 downloads/toolbox_nyu_depth_v2.zip: | downloads
 	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o $@
 
 toolbox: downloads/toolbox_nyu_depth_v2.zip
-	unzip downloads/toolbox_nyu_depth_v2.zip -d $@
+	unzip $< -d $@
 	touch $@
 
 ###########################################################
