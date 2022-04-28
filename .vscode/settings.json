@@ -2,5 +2,6 @@
     "files.watcherExclude": {
         "**/.git/**": true,
         "**/.venv/**": true
-    }
+    },
+    "python.pythonPath": ".venv/bin/python"
 }
