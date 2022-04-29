@@ -3,7 +3,10 @@ SHELL := /bin/bash
 all: download .venv
 .PHONY: all
 
-download: toolbox data/nyu_depth_v2_labeled.mat
+download: \
+		toolbox \
+		data/nyu_depth_v2_labeled.mat \
+		data/splits.mat
 .PHONY: download
 
 clean:
@@ -30,6 +33,9 @@ data:
 
 data/nyu_depth_v2_labeled.mat: | data
 	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
+
+data/splits.mat: | data
+	curl -L http://horatio.cs.nyu.edu/mit/silberman/indoor_seg_sup/splits.mat -o $@
 
 toolbox: | tmp
 	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o tmp/toolbox_nyu_depth_v2.zip
