@@ -6,7 +6,8 @@ all: download .venv
 download: \
 		toolbox \
 		data/nyu_depth_v2_labeled.mat \
-		data/splits.mat
+		data/splits.mat \
+		data/nyu_depth_v1_filenames.mat
 .PHONY: download
 
 clean:
@@ -36,6 +37,9 @@ data/nyu_depth_v2_labeled.mat: | data
 
 data/splits.mat: | data
 	curl -L http://horatio.cs.nyu.edu/mit/silberman/indoor_seg_sup/splits.mat -o $@
+
+data/nyu_depth_v1_filenames.mat: | data
+	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v1/nyu_depth_v1_filenames.mat -o $@
 
 toolbox: | tmp
 	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o tmp/toolbox_nyu_depth_v2.zip
