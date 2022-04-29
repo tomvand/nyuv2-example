@@ -1,21 +1,18 @@
 SHELL := /bin/bash
 
-all: download unpack .venv
+all: download .venv
 .PHONY: all
 
-download: downloads/nyu_depth_v2_labeled.mat downloads/toolbox_nyu_depth_v2.zip
+download: toolbox data/nyu_depth_v2_labeled.mat
 .PHONY: download
 
-unpack: toolbox data/nyu_depth_v2_labeled.mat
-.PHONY: unpack
-
 clean:
-	rm -r toolbox || true
-	rm -r data || true
+	rm -r tmp || true
 .PHONY: clean
 
 purge: clean
-	rm -r downloads || true
+	rm -r toolbox || true
+	rm -r data || true
 	rm -r .venv || true
 .PHONY: purge
 
@@ -25,23 +22,19 @@ freeze:
 
 ###########################################################
 
-downloads:
-	mkdir downloads
-
-downloads/nyu_depth_v2_labeled.mat: | downloads
-	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
+tmp:
+	mkdir tmp
 
 data:
 	mkdir data
 
-data/nyu_depth_v2_labeled.mat: downloads/nyu_depth_v2_labeled.mat | data
-	ln -s ../$< $@
+data/nyu_depth_v2_labeled.mat: | data
+	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat -o $@
 
-downloads/toolbox_nyu_depth_v2.zip: | downloads
-	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o $@
-
-toolbox: downloads/toolbox_nyu_depth_v2.zip
-	unzip $< -d $@
+toolbox: | tmp
+	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o tmp/toolbox_nyu_depth_v2.zip
+	unzip tmp/toolbox_nyu_depth_v2.zip -d $@
+	rm tmp/toolbox_nyu_depth_v2.zip
 	touch $@
 
 ###########################################################
