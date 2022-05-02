@@ -7,7 +7,8 @@ download: \
 		toolbox \
 		data/nyu_depth_v2_labeled.mat \
 		data/splits.mat \
-		data/nyu_depth_v1_filenames.mat
+		data/nyu_depth_v1_filenames.mat \
+		data/bian2022_split
 .PHONY: download
 
 clean:
@@ -40,6 +41,12 @@ data/splits.mat: | data
 
 data/nyu_depth_v1_filenames.mat: | data
 	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v1/nyu_depth_v1_filenames.mat -o $@
+
+data/bian2022_split: | tmp data
+	# curl -L https://api.onedrive.com/v1.0/shares/s!AiV6XqkxJHE2mUUA5hElvhZXnqOn/root/content -o tmp/bian2022_nyu.zip
+	unzip tmp/bian2022_nyu.zip -d $@
+	rm tmp/bian2022_nyu.zip
+	touch $@
 
 toolbox: | tmp
 	curl -L http://cs.nyu.edu/~silberman/code/toolbox_nyu_depth_v2.zip -o tmp/toolbox_nyu_depth_v2.zip
