@@ -67,8 +67,9 @@ toolbox: | tmp
 
 ###########################################################
 
-monodepth2: monodepth2.patch
+monodepth2: monodepth2.patch mono_nyu.py
 	rm -r monodepth2 || true
 	git submodule update --init --recursive monodepth2
 	cd monodepth2 && git apply ../monodepth2.patch
+	cp mono_nyu.py monodepth2/datasets
 	touch monodepth2
