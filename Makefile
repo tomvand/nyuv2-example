@@ -47,7 +47,7 @@ data/nyu_depth_v1_filenames.mat: | data
 	curl -L http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v1/nyu_depth_v1_filenames.mat -o $@
 
 data/bian2022_split: | tmp data
-	# curl -L https://api.onedrive.com/v1.0/shares/s!AiV6XqkxJHE2mUUA5hElvhZXnqOn/root/content -o tmp/bian2022_nyu.zip
+	curl -L https://api.onedrive.com/v1.0/shares/s!AiV6XqkxJHE2mUUA5hElvhZXnqOn/root/content -o tmp/bian2022_nyu.zip
 	unzip tmp/bian2022_nyu.zip -d $@
 	rm tmp/bian2022_nyu.zip
 	touch $@
