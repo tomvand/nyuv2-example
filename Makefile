@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-all: download .venv
+all: download .venv monodepth2
 .PHONY: all
 
 download: \
@@ -24,6 +24,10 @@ purge: clean
 freeze:
 	source .venv/bin/activate && pip freeze -l | grep -v "pkg_resources" > requirements.txt
 .PHONY: freeze
+
+patch:
+	cd monodepth2 && git diff master..tudelft > ../monodepth2.patch
+.PHONY: patch
 
 ###########################################################
 
@@ -63,10 +67,8 @@ toolbox: | tmp
 
 ###########################################################
 
-monodepth2.patch:
-	cd monodepth2 && git diff master..tudelft > ../monodepth2.patch
-.PHONY: monodepth2.patch
-
-monodepth2: monodepth2-patches
+monodepth2: monodepth2.patch
 	rm -r monodepth2 || true
 	git submodule update --init --recursive monodepth2
+	cd monodepth2 && git apply ../monodepth2.patch
+	touch monodepth2
