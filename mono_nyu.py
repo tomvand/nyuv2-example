@@ -7,6 +7,9 @@ Adapter class to use Bian et al.'s NYU Dataset classes in monodepth2
 
 import numpy as np
 import copy
+import glob
+import random
+import os
 
 # Append monodepth2 and sc_depth_pl search paths
 import sys
@@ -47,7 +50,7 @@ class NYUDataset(MonoDataset):
 
     # NYU dataset class parameters:
     #   data_path               - nyu root folder (contains training/, testing/)
-    #   is_train_val             - True if validation set (set by subclass)
+    #   is_train_val            - True if validation set (set by subclass)
 
     def __init__(self, *args, **kwargs):
         super(NYUDataset, self).__init__(*args, **kwargs)
@@ -65,20 +68,52 @@ class NYUDataset(MonoDataset):
         ])
 
         # Override self.filenames
+        # monodepth2 line format:
+        # <folder> [<int:frame_index> <side>]
+        if self.nyu_set() == 'trainval':
+            # Generate filenames for set
+            self.img_ext = '.jpg'
+            self.filenames = []
+            s = 'train' if self.is_train else 'val'
+            with open(f'{self.data_path}/training/{s}.txt', 'rt') as f:
+                folders = f.readlines()
+            for folder in folders:
+                folder = folder.strip()
+                files = sorted(glob.glob(f'{self.data_path}/training/{folder}/*.jpg'))
+                start = -min(self.frame_idxs)
+                end = len(files) - max(self.frame_idxs)
+                for i in range(start, end):
+                    self.filenames.append(f'training/{folder} {i:06d} l')
+            random.shuffle(self.filenames)
+            # print(self.filenames[0:10])
+        else:
+            # Generate filenames for test images
+            self.img_ext = '.png'
+            self.filenames = []
+            files = sorted(glob.glob(f'{self.data_path}/testing/color/*.png'))
+            indices = [int(os.path.basename(f).strip('.png')) for f in files]
+            for i in indices:
+                self.filenames.append(f'testing/color {i:04d} l')
+            random.shuffle(self.filenames)
+            print(self.filenames[0:10])
     
     def check_depth(self):
-        return True  # TODO
+        return self.nyu_set() == 'trainval' and self.is_train
 
 
 class NYUTrainValSet(NYUDataset):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.nyu_set = 'trainval'
+    
+    def nyu_set(self):
+        return 'trainval'
 
 class NYUTestSet(NYUDataset):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.nyu_set = 'test'
+    
+    def nyu_set(self):
+        return 'test'
 
 
 # Example code
