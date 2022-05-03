@@ -1,0 +1,56 @@
+diff --git a/datasets/__init__.py b/datasets/__init__.py
+index 5b91734..6b23594 100644
+--- a/datasets/__init__.py
++++ b/datasets/__init__.py
+@@ -1 +1,2 @@
+ from .kitti_dataset import KITTIRAWDataset, KITTIOdomDataset, KITTIDepthDataset
++from .mono_nyu import NYUTrainValSet, NYUTestSet
+diff --git a/evaluate_depth.py b/evaluate_depth.py
+index 7746ef9..e7c7cd7 100644
+--- a/evaluate_depth.py
++++ b/evaluate_depth.py
+@@ -80,9 +80,14 @@ def evaluate(opt):
+ 
+         encoder_dict = torch.load(encoder_path)
+ 
+-        dataset = datasets.KITTIRAWDataset(opt.data_path, filenames,
+-                                           encoder_dict['height'], encoder_dict['width'],
+-                                           [0], 4, is_train=False)
++        if opt.dataset == "nyu":
++            dataset_cls = datasets.NYUTestSet
++        else:
++            dataset_cls = datasets.KITTIRAWDataset
++
++        dataset = dataset_cls(opt.data_path, filenames,
++                              encoder_dict['height'], encoder_dict['width'],
++                              [0], 4, is_train=False)
+         dataloader = DataLoader(dataset, 16, shuffle=False, num_workers=opt.num_workers,
+                                 pin_memory=True, drop_last=False)
+ 
+diff --git a/options.py b/options.py
+index f8c6aa1..8217799 100644
+--- a/options.py
++++ b/options.py
+@@ -45,7 +45,7 @@ class MonodepthOptions:
+                                  type=str,
+                                  help="dataset to train on",
+                                  default="kitti",
+-                                 choices=["kitti", "kitti_odom", "kitti_depth", "kitti_test"])
++                                 choices=["kitti", "kitti_odom", "kitti_depth", "kitti_test", "nyu"])
+         self.parser.add_argument("--png",
+                                  help="if set, trains from raw KITTI png files (instead of jpgs)",
+                                  action="store_true")
+diff --git a/trainer.py b/trainer.py
+index f370603..a2cdbd8 100644
+--- a/trainer.py
++++ b/trainer.py
+@@ -112,7 +112,8 @@ class Trainer:
+ 
+         # data
+         datasets_dict = {"kitti": datasets.KITTIRAWDataset,
+-                         "kitti_odom": datasets.KITTIOdomDataset}
++                         "kitti_odom": datasets.KITTIOdomDataset,
++                         "nyu": datasets.NYUTrainValSet}
+         self.dataset = datasets_dict[self.opt.dataset]
+ 
+         fpath = os.path.join(os.path.dirname(__file__), "splits", self.opt.split, "{}_files.txt")

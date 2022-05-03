@@ -61,3 +61,12 @@ toolbox: | tmp
 	source .venv/bin/activate && pip install -r requirements.txt
 	touch .venv
 
+###########################################################
+
+monodepth2.patch:
+	cd monodepth2 && git diff master..tudelft > ../monodepth2.patch
+.PHONY: monodepth2.patch
+
+monodepth2: monodepth2-patches
+	rm -r monodepth2 || true
+	git submodule update --init --recursive monodepth2
