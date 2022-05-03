@@ -16,12 +16,7 @@ from imageio import imread
 # Append monodepth2 and sc_depth_pl search paths
 import sys
 sys.path.insert(0, 'monodepth2')
-sys.path.insert(0, 'sc_depth_pl')
-
 from monodepth2.datasets.mono_dataset import MonoDataset
-from sc_depth_pl.datasets.train_folders import TrainFolder
-from sc_depth_pl.datasets.validation_folders import ValidationSet
-from sc_depth_pl.datasets.test_folder import TestSet
 
 
 class NYUDataset(MonoDataset):
