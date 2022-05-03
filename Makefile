@@ -5,10 +5,10 @@ all: download .venv monodepth2
 
 download: \
 		toolbox \
-		data/nyu_depth_v2_labeled.mat \
-		data/splits.mat \
-		data/nyu_depth_v1_filenames.mat \
 		data/bian2022_split
+		# data/nyu_depth_v2_labeled.mat \
+		# data/splits.mat \
+		# data/nyu_depth_v1_filenames.mat \		
 .PHONY: download
 
 clean:
