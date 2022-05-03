@@ -10,6 +10,7 @@ import copy
 import glob
 import random
 import os
+import PIL.Image as pil
 
 # Append monodepth2 and sc_depth_pl search paths
 import sys
@@ -95,10 +96,23 @@ class NYUDataset(MonoDataset):
             for i in indices:
                 self.filenames.append(f'testing/color {i:04d} l')
             random.shuffle(self.filenames)
-            print(self.filenames[0:10])
+            # print(self.filenames[0:10])
     
     def check_depth(self):
-        return self.nyu_set() == 'trainval' and self.is_train
+        return self.nyu_set() == 'test' or (self.nyu_set() == 'trainval' and self.is_train)
+    
+    def get_color(self, folder, frame_index, side, do_flip):
+        if self.nyu_set() == 'trainval':
+            path = f'{self.data_path}/training/{folder}/{frame_index:06d}{self.img_ext}'
+        else:
+            path = f'{self.data_path}/testing/{folder}/{frame_index:04d}{self.img_ext}'
+        
+        color = self.loader(path)
+
+        if do_flip:
+            color = color.transpose(pil.FLIP_LEFT_RIGHT)
+        
+        return color
 
 
 class NYUTrainValSet(NYUDataset):
