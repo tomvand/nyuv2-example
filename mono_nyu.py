@@ -11,6 +11,7 @@ import glob
 import random
 import os
 import PIL.Image as pil
+from imageio import imread
 
 # Append monodepth2 and sc_depth_pl search paths
 import sys
@@ -113,6 +114,19 @@ class NYUDataset(MonoDataset):
             color = color.transpose(pil.FLIP_LEFT_RIGHT)
         
         return color
+    
+    def get_depth(self, folder, frame_index, side, do_flip):
+        if self.nyu_set() == 'trainval':
+            path = f'{self.data_path}/training/{folder}/depth/{frame_index:06d}.png'
+        else:
+            path = f'{self.data_path}/testing/{folder}/../depth/{frame_index:04d}.png'
+        
+        depth_gt = imread(path).astype(np.float32) / 5000  # See sc_depth_pl/datasets/validation_folders.py
+
+        if do_flip:
+            depth_gt = np.fliplr(depth_gt)
+        
+        return depth_gt
 
 
 class NYUTrainValSet(NYUDataset):
@@ -132,29 +146,7 @@ class NYUTestSet(NYUDataset):
 
 # Example code
 if __name__ == '__main__':
-    # trainer.py:
-    # dataset(                  - Dataset class loaded from hardcoded dict(!)
-    #   self.opt.data_path      - path to the training data
-    #   train_filenames         - readlines(fpath.format("train")), splits txt file
-    #   self.opt.height         - input image height (192)
-    #   self.opt.width          - input image width (640)
-    #   self.opt.frame_ids      - frames to load ([0, -1, 1])
-    #   4                       - num_scales
-    #   is_train=True           - True: training set; False: validation set
-    #   img_ext=img_ext         - '.png' or '.jpg'
-    # )
-    #
-    # evaluate_depth.py:
-    # datasets.KITTIRAWDataset( - Dataset class hardcoded(!)
-    #   opt.data_path           - path to the training data
-    #   filenames               - readlines(os.path.join(splits_dir, opt.eval_split, "test_files.txt"))
-    #   encoder_dict['height']  - trained input width
-    #   encoder_dict['width']   - trained input height
-    #   [0]                     - frames to load
-    #   4                       - num_scales
-    #   is_train=False          - 
-    #   img_ext                 - unspecified, defaults to '.jpg'
-    # )
+    import matplotlib.pyplot as plt
 
     kwargs_common = {
         'data_path': 'data/bian2022_split/nyu',
@@ -182,3 +174,10 @@ if __name__ == '__main__':
     nyu_train = NYUTrainValSet(**kwargs_train)
     nyu_val = NYUTrainValSet(**kwargs_val)
     nyu_test = NYUTestSet(**kwargs_test)
+
+
+    depth_gt = nyu_test.get_depth('color', 14, 'l', True)
+    plt.figure()
+    plt.imshow(depth_gt, cmap='plasma')
+    plt.colorbar()
+    plt.show()
