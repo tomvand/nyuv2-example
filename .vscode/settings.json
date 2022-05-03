@@ -4,5 +4,8 @@
         "**/.venv/**": true,
         "**/data/**": true
     },
-    "python.pythonPath": ".venv/bin/python"
+    "python.pythonPath": ".venv/bin/python",
+    "python.analysis.extraPaths": [
+        "./monodepth2"
+    ]
 }
