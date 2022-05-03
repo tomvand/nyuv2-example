@@ -3,8 +3,8 @@ SHELL := /bin/bash
 all: download .venv monodepth2
 .PHONY: all
 
-download:
-		data/bian2022_split
+download: \
+		data/bian2022_split \
 		# toolbox \
 		# data/nyu_depth_v2_labeled.mat \
 		# data/splits.mat \
